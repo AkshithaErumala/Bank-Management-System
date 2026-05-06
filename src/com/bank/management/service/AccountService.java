@@ -60,8 +60,6 @@ public class AccountService
         else {
             System.out.println("Account has not been created");
         }
-
-        displayDetails();
     }
 
 
@@ -188,21 +186,4 @@ public class AccountService
     {
         return (accountNumber.matches("ACC\\d{5}"));
     }
-
-    public void displayDetails()
-    {
-        for(Account details:accountList)
-        {
-            System.out.println(details.getName());
-            System.out.println(details.getDob());
-            System.out.println(details.getAddress());
-            System.out.println(details.getMobileNumber());
-            System.out.println(details.getAdharNumber());
-            System.out.println(details.getPanNumber());
-            System.out.println(details.getAccountNumber());
-            System.out.println(details.getCustomerId());
-            System.out.println(details.getKycStatus());
-        }
-    }
-
 }
