@@ -1,12 +1,11 @@
 package com.bank.management.controllers;
 
 import com.bank.management.service.*;
-
 import java.util.Scanner;
 
 
 public class BankController {
-    Scanner scanner;
+    private Scanner scanner;
     AccountService accountService;
     TransactionService transactionService;
     public BankController() {
@@ -20,7 +19,8 @@ public class BankController {
     }
     public void switchMenu()
     {
-        while(true) {
+        while(true)
+        {
             System.out.println("1->Open Account");
             System.out.println("2->Deposit");
             System.out.println("3->Withdraw");
@@ -54,7 +54,5 @@ public class BankController {
                         break;
                 }
             }
-
-
     }
 }

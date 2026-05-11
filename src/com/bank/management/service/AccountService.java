@@ -1,13 +1,12 @@
 package com.bank.management.service;
 
-import com.bank.management.model.Account;
-
-import java.nio.file.PathMatcher;
+import com.bank.management.model.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 
 public class AccountService
 {
@@ -17,30 +16,35 @@ public class AccountService
         this.scanner=scanner;
         otpService=new OtpService(scanner);
     }
-    String AccountNumber;
-    String CustomerId;
-    String KYCStatus;
+    String accountNumber;
+    String customerId;
+    String kycStatus;
     LocalDate dob=null;
     int age;
     int AccountCounter = 10001;
     int CustomerCounter = 50001;
+    Customer customer;
     OtpService otpService;
     Account account;
-    ArrayList<Account> accountList=new ArrayList<Account>();
+    ArrayList<Customer> customers=new ArrayList();
     public void createAccount()
     {
-        String Name=getValidName();
+        System.out.println("Select Account Type: ");
+        System.out.println("1. SAVINGS ACCOUNT");
+        System.out.println("2. CURRENT ACCOUNT");
+        int choice = Integer.parseInt(scanner.nextLine());
+        String name=getValidName();
         LocalDate dob=getValidDob();
-        String AdharNumber=getValidAdhar();
-        String PanCardNumber=getValidPanNumber();
-        String PhoneNumber=getValidMobileNumber();
+        String adhaarNumber=getValidAdhar();
+        String panNumber=getValidPanNumber();
+        String phoneNumber=getValidMobileNumber();
         System.out.println("Enter Address");
-        String Address=scanner.nextLine();
+        String address=scanner.nextLine();
 
 
         if(isEligible())
         {
-            otpService.generateOtp(PhoneNumber);
+            otpService.generateOtp(phoneNumber);
         }
         else {
             System.out.println("You must be at least 18 years old to open a bank account.");
@@ -48,14 +52,26 @@ public class AccountService
         }
         if(isVerified())
         {
-            AccountNumber=generateAccountNumber();
-            CustomerId=generateCustomerId();
-            KYCStatus="VERIFIED";
-            account=new Account(Name,dob,PhoneNumber,Address,AdharNumber,PanCardNumber,AccountNumber,CustomerId,KYCStatus);
-            accountList.add(account);
+            accountNumber=generateAccountNumber() ;
+            customerId=generateCustomerId();
+            kycStatus="VERIFIED";
+            customer=new Customer(customerId,name,dob,phoneNumber,address,adhaarNumber,panNumber,kycStatus);
+            if(choice == 1)
+            {
+                account=new SavingsAccount(accountNumber);
+            }
+            if(choice == 2) {
+                account=new CurrentAccount(accountNumber);
+            }
+            else {
+                System.out.println("Incorrect choice");
+                return;
+            }
+            customers.add(customer);
+            customer.getAccounts().add(account);
             System.out.println("Account Created Successfully");
-            System.out.println("ACCOUNT NUMBER : "+AccountNumber);
-            System.out.println("CUSTOMER ID : "+CustomerId);
+            System.out.println("ACCOUNT NUMBER : "+accountNumber);
+            System.out.println("CUSTOMER ID : "+customerId);
         }
         else {
             System.out.println("Account has not been created");
@@ -87,7 +103,7 @@ public class AccountService
         System.out.println("Enter your name:");
         while(true) {
             String name=scanner.nextLine();
-            if(name.matches("[a-zA-Z]+"))
+            if(name.matches("[a-zA-Z ]+"))
             {
                 return name;
             }
@@ -170,20 +186,27 @@ public class AccountService
         return "CUST"+CustomerCounter++;
     }
 
-    public Account findAccountByAccountNumber(String accountNumber)
+    public AccountSearchResult findAccountByAccountNumber(String accountNumber)
     {
-        for(Account account:accountList)
+        if(!isAccountNumberValid(accountNumber))
         {
-            if(accountNumber.equals(account.getAccountNumber()))
-            {
-                return account;
+            return new AccountSearchResult(AccountSearchStatus.INVALID_ACCOUNT_FORMAT,null);
+        }
+        for(Customer customer:customers)
+        {
+            for(Account  account:customer.getAccounts()) {
+                if (accountNumber.equals(account.getAccountNumber())) {
+                    return new AccountSearchResult(AccountSearchStatus.ACCOUNT_FOUND,account);
+                }
             }
         }
-        return null;
+        return new AccountSearchResult(AccountSearchStatus.ACCOUNT_NOT_FOUND,null);
     }
+
 
     public boolean isAccountNumberValid(String accountNumber)
     {
         return (accountNumber.matches("ACC\\d{5}"));
     }
+
 }

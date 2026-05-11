@@ -1,21 +1,25 @@
-package com.bank.management.service;
-
-import com.bank.management.model.Account;
+package com.bank.management.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Transaction {
-    String type;
-    double amount;
-    LocalDateTime dateTime;
+    private String type;
+    private double amount;
+    private LocalDateTime dateTime;
 
     public Transaction(String type, double amount, LocalDateTime dateTime) {
         this.type = type;
         this.amount = amount;
         this.dateTime = dateTime;
     }
-
+    public String getType() {
+        return type;
+    }
+    public double getAmount() {
+        return amount;
+    }
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
 
 }
